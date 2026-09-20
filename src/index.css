@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', 'Inter', sans-serif;
+
+  /* Theme Palette - Sleek Modern Dark (Default) */
+  --bg-app: #0b0f19;
+  --bg-sidebar-books: #0f172a;
+  --bg-sidebar-pages: #111827;
+  --bg-workspace: #090d16;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --bg-input: #1e293b;
+  --bg-canvas: #0b0f19;
+  --canvas-grid-dot: rgba(255, 255, 255, 0.12);
+
+  --accent-primary: #6366f1;
+  --accent-primary-hover: #4f46e5;
+  --accent-secondary: #ec4899;
+  --accent-cyan: #06b6d4;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(99, 102, 241, 0.4);
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+/* EYE-FRIENDLY WARM SPECTRUM LIGHT MODE (SOOTHING CREAM & SEPIA) */
+:root[data-theme="light"] {
+  --bg-app: #f7f4ee;
+  --bg-sidebar-books: #efeae1;
+  --bg-sidebar-pages: #f9f6f0;
+  --bg-workspace: #f7f4ee;
+  --bg-card: #ffffff;
+  --bg-card-hover: #eae4d8;
+  --bg-input: #ffffff;
+  --bg-canvas: #fcfaf6;
+  --canvas-grid-dot: rgba(160, 140, 120, 0.28);
+
+  --accent-primary: #6366f1;
+  --accent-primary-hover: #4f46e5;
+  --accent-secondary: #db2777;
+  --accent-cyan: #0284c7;
+
+  --text-main: #2c2621;
+  --text-muted: #63584e;
+  --text-dim: #8c7e72;
+
+  --border-color: #e4ddd3;
+  --border-highlight: rgba(99, 102, 241, 0.5);
+
+  --shadow-sm: 0 1px 3px rgba(100, 80, 60, 0.08);
+  --shadow-md: 0 4px 10px rgba(100, 80, 60, 0.1);
+  --shadow-lg: 0 10px 25px rgba(100, 80, 60, 0.15);
+  --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 126, 114, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 126, 114, 0.6);
+}

@@ -1,0 +1,356 @@
+{
+  "info": {
+    "type": "PlaylistMetadata",
+    "title": "Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2026)",
+    "description": "Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2026)\n\nIf you liked this playlist, we recommend you also listen to these music lists:\n\n1. Pop Music Playlist - Timeless Pop Songs (Updated Weekly 2026) - https://play.redlist.com/2161\n2. Best Pop Songs of All Time - Most Famous Pop Music (Greatest Pop Hits Ever) - https://play.redlist.com/13732\n\nFind our playlist with these keywords: pop music hits, best pop songs of all time, pop hits playlist, best pop songs, popular pop songs, famous pop music, pop playlist, best pop song ever, top pop songs of all time, timeless pop hits playlist, top pop music, classic pop songs, most popular pop songs, good pop music, all time pop hits, greatest pop songs of all time, pop music playlist, most listened pop songs, popular pop music.\n\nDive into a seamless blend of best music hits and the latest pop songs of 2026 featuring the musical prowess of artists that have defined generations. From the melodic genius of Ed Sheeran and the dynamic duos of Mark Ronson & Bruno Mars. Explore chart-toppers by Maroon 5, OneRepublic, David Kushner, and Katy Perry. Feel the rhythm with Justin Bieber and Miley Cyrus. Lose yourself in the beats of Alan Walker, Passenger, Anne-Marie, Becky G, Major Lazer & DJ Snake, and Dua Lipa. This compilation is a blend of nostalgia and the best pop music of 2026 that'll have you hitting repeat! 🎵🌟🎤\n\nIn the next year, the playlist is going to be titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2027)\n Last year, the playlist was titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2025)\n\nShare your thoughts on our playlist: contact@red-music.com",
+    "subtitle": null,
+    "author": {
+      "id": "UCs72iRpTEuwV3y6pdWYLgiw",
+      "name": "Redlist - Just Hits",
+      "thumbnails": [
+        {
+          "url": "https://yt3.ggpht.com/ytc/AIdro_nf96C9RdEtI1FTNb6SVCy8ALI0MAkirEX2cBw8OTnbaQ=s176-c-k-c0x00ffffff-no-rj",
+          "width": 176,
+          "height": 176
+        },
+        {
+          "url": "https://yt3.ggpht.com/ytc/AIdro_nf96C9RdEtI1FTNb6SVCy8ALI0MAkirEX2cBw8OTnbaQ=s88-c-k-c0x00ffffff-no-rj",
+          "width": 88,
+          "height": 88
+        },
+        {
+          "url": "https://yt3.ggpht.com/ytc/AIdro_nf96C9RdEtI1FTNb6SVCy8ALI0MAkirEX2cBw8OTnbaQ=s48-c-k-c0x00ffffff-no-rj",
+          "width": 48,
+          "height": 48
+        }
+      ],
+      "endpoint": {
+        "type": "NavigationEndpoint",
+        "name": "browseEndpoint",
+        "payload": {
+          "browseId": "UCs72iRpTEuwV3y6pdWYLgiw",
+          "canonicalBaseUrl": "/@Redlist-JustHits"
+        },
+        "metadata": {
+          "url": "/@Redlist-JustHits",
+          "page_type": "WEB_PAGE_TYPE_CHANNEL",
+          "api_url": "browse"
+        },
+        "command": {
+          "type": "BrowseEndpoint"
+        }
+      },
+      "badges": [],
+      "url": "https://www.youtube.com/@Redlist-JustHits"
+    },
+    "thumbnails": [
+      {
+        "url": "https://i.ytimg.com/vi/450p7goxZqg/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDE3Cp180NXfnwGKW6xo0qA4Z_vKw",
+        "width": 336,
+        "height": 188
+      },
+      {
+        "url": "https://i.ytimg.com/vi/450p7goxZqg/hqdefault.jpg?sqp=-oaymwEXCPYBEIoBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDMANn8rHZuqKuauOG1KJvXCTxPng",
+        "width": 246,
+        "height": 138
+      },
+      {
+        "url": "https://i.ytimg.com/vi/450p7goxZqg/hqdefault.jpg?sqp=-oaymwEWCMQBEG5IWvKriqkDCQgBFQAAiEIYAQ==&rs=AOn4CLCY826nfhdgfaCMmd4TTCe55hwLRA",
+        "width": 196,
+        "height": 110
+      },
+      {
+        "url": "https://i.ytimg.com/vi/450p7goxZqg/hqdefault.jpg?sqp=-oaymwEWCKgBEF5IWvKriqkDCQgBFQAAiEIYAQ==&rs=AOn4CLDJp-gbSAEVOXzi9fZ_MKoa7YOkhw",
+        "width": 168,
+        "height": 94
+      }
+    ],
+    "total_items": "180 videos",
+    "views": "159,780,155 views",
+    "last_updated": "Updated today"
+  },
+  "menu": {
+    "type": "Menu",
+    "items": [
+      {
+        "type": "MenuNavigationItem",
+        "text": "Report playlist",
+        "icon_type": "FLAG",
+        "endpoint": {
+          "type": "NavigationEndpoint",
+          "name": "modalEndpoint",
+          "payload": {
+            "modal": {
+              "modalWithTitleAndButtonRenderer": {
+                "title": {
+                  "simpleText": "Need to report the playlist?"
+                },
+                "content": {
+                  "simpleText": "Sign in to report inappropriate content."
+                },
+                "button": {
+                  "buttonRenderer": {
+                    "style": "STYLE_BRAND",
+                    "size": "SIZE_DEFAULT",
+                    "isDisabled": false,
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Sign in"
+                        }
+                      ]
+                    },
+                    "navigationEndpoint": {
+                      "clickTrackingParams": "CAoQ8FsiEwiIvtyogIKWAxVxoNgFHfjDKVrKAQS5Eq0V",
+                      "commandMetadata": {
+                        "webCommandMetadata": {
+                          "url": "https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3D%252Fchannel%252FPLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl&hl=en",
+                          "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                          "rootVe": 83769
+                        }
+                      },
+                      "signInEndpoint": {
+                        "nextEndpoint": {
+                          "clickTrackingParams": "CAoQ8FsiEwiIvtyogIKWAxVxoNgFHfjDKVrKAQS5Eq0V",
+                          "commandMetadata": {
+                            "webCommandMetadata": {
+                              "url": "/channel/PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl",
+                              "webPageType": "WEB_PAGE_TYPE_BROWSE",
+                              "rootVe": 6827,
+                              "apiUrl": "/youtubei/v1/browse"
+                            }
+                          },
+                          "browseEndpoint": {
+                            "browseId": "PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl"
+                          }
+                        }
+                      }
+                    },
+                    "trackingParams": "CAoQ8FsiEwiIvtyogIKWAxVxoNgFHfjDKVo="
+                  }
+                }
+              }
+            }
+          },
+          "modal": {
+            "type": "ModalWithTitleAndButton",
+            "title": {
+              "text": "Need to report the playlist?",
+              "rtl": false
+            },
+            "content": {
+              "text": "Sign in to report inappropriate content.",
+              "rtl": false
+            },
+            "button": {
+              "type": "Button",
+              "text": "Sign in",
+              "style": "STYLE_BRAND",
+              "size": "SIZE_DEFAULT",
+              "is_disabled": false,
+              "endpoint": {
+                "type": "NavigationEndpoint",
+                "name": "signInEndpoint",
+                "payload": {
+                  "nextEndpoint": {
+                    "clickTrackingParams": "CAoQ8FsiEwiIvtyogIKWAxVxoNgFHfjDKVrKAQS5Eq0V",
+                    "commandMetadata": {
+                      "webCommandMetadata": {
+                        "url": "/channel/PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl",
+                        "webPageType": "WEB_PAGE_TYPE_BROWSE",
+                        "rootVe": 6827,
+                        "apiUrl": "/youtubei/v1/browse"
+                      }
+                    },
+                    "browseEndpoint": {
+                      "browseId": "PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl"
+                    }
+                  }
+                },
+                "next_endpoint": {
+                  "type": "NavigationEndpoint",
+                  "name": "browseEndpoint",
+                  "payload": {
+                    "browseId": "PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl"
+                  },
+                  "metadata": {
+                    "url": "/channel/PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl",
+                    "page_type": "WEB_PAGE_TYPE_BROWSE",
+                    "api_url": "browse"
+                  },
+                  "command": {
+                    "type": "BrowseEndpoint"
+                  }
+                },
+                "metadata": {
+                  "url": "https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3D%252Fchannel%252FPLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl&hl=en",
+                  "page_type": "WEB_PAGE_TYPE_UNKNOWN"
+                }
+              }
+            }
+          },
+          "metadata": {}
+        }
+      }
+    ],
+    "flexible_items": [],
+    "top_level_buttons": [
+      {
+        "type": "ToggleButton",
+        "text": {
+          "rtl": false
+        },
+        "toggled_text": {
+          "rtl": false
+        },
+        "tooltip": "Save playlist",
+        "toggled_tooltip": "Remove from Library",
+        "is_toggled": false,
+        "is_disabled": false,
+        "icon_type": "PLAYLIST_ADD",
+        "endpoint": {
+          "type": "NavigationEndpoint",
+          "payload": {},
+          "metadata": {}
+        },
+        "toggled_endpoint": {
+          "type": "NavigationEndpoint",
+          "payload": {},
+          "metadata": {}
+        }
+      },
+      {
+        "type": "Button",
+        "label": "Shuffle play",
+        "tooltip": "Shuffle play",
+        "style": "STYLE_TEXT",
+        "size": "SIZE_DEFAULT",
+        "icon_type": "SHUFFLE",
+        "is_disabled": false,
+        "endpoint": {
+          "type": "NavigationEndpoint",
+          "name": "watchEndpoint",
+          "payload": {
+            "videoId": "UqyT8IEBkvY",
+            "playlistId": "PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl",
+            "params": "CKQlIFM%3D",
+            "playerParams": "iAQB8AUB",
+            "loggingContext": {
+              "vssLoggingContext": {
+                "serializedContextData": "GiJQTE1DOUtOa0luY0t2WWluX1VTRjFxb0pRbkl5TUFmUnhs"
+              }
+            },
+            "watchEndpointSupportedOnesieConfig": {
+              "html5PlaybackOnesieConfig": {
+                "commonConfig": {
+                  "url": "https://rr1---sn-gwpa-cagee.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&olis=1&ofpcc=1&msp=1&odepv=1&id=52ac93f0810192f6&ip=2409%3A40f2%3A1a%3A4032%3A1cf9%3Ae5e7%3Aa980%3Aba6d&initcwndbps=975000&mt=1785675202&oweuc="
+                }
+              }
+            }
+          },
+          "metadata": {
+            "url": "/watch?v=UqyT8IEBkvY&list=PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl&pp=iAQB8AUB",
+            "page_type": "WEB_PAGE_TYPE_WATCH",
+            "api_url": "/player"
+          },
+          "command": {
+            "type": "WatchEndpoint"
+          }
+        }
+      },
+      {
+        "type": "Button",
+        "label": "Share",
+        "tooltip": "Share",
+        "style": "STYLE_DEFAULT",
+        "size": "SIZE_DEFAULT",
+        "icon_type": "SHARE",
+        "is_disabled": false,
+        "endpoint": {
+          "type": "NavigationEndpoint",
+          "name": "shareEntityServiceEndpoint",
+          "payload": {
+            "serializedShareEntity": "EiJQTE1DOUtOa0luY0t2WWluX1VTRjFxb0pRbkl5TUFmUnhs",
+            "commands": [
+              {
+                "clickTrackingParams": "CAUQ8FsYDyITCIi-3KiAgpYDFXGg2AUd-MMpWsoBBLkSrRU=",
+                "openPopupAction": {
+                  "popup": {
+                    "unifiedSharePanelRenderer": {
+                      "trackingParams": "CAYQjmIiEwiIvtyogIKWAxVxoNgFHfjDKVo=",
+                      "showLoadingSpinner": true
+                    }
+                  },
+                  "popupType": "DIALOG",
+                  "beReused": true
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "api_url": "share/get_share_panel",
+            "send_post": true
+          },
+          "command": {
+            "type": "ShareEntityServiceEndpoint"
+          }
+        }
+      }
+    ],
+    "accessibility": {
+      "accessibility_data": {
+        "label": "Action menu"
+      }
+    }
+  },
+  "endpoint": {
+    "type": "NavigationEndpoint",
+    "name": "watchEndpoint",
+    "payload": {
+      "videoId": "JGwWNGJdvx8",
+      "playlistId": "PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl",
+      "playerParams": "iAQB8AUB0gcJCbECa94AFGB0",
+      "loggingContext": {
+        "vssLoggingContext": {
+          "serializedContextData": "GiJQTE1DOUtOa0luY0t2WWluX1VTRjFxb0pRbkl5TUFmUnhs"
+        }
+      },
+      "watchEndpointSupportedOnesieConfig": {
+        "html5PlaybackOnesieConfig": {
+          "commonConfig": {
+            "url": "https://rr6---sn-gwpa-cages.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&olis=1&ofpcc=1&msp=1&odepv=1&id=246c1634625dbf1f&ip=2409%3A40f2%3A1a%3A4032%3A1cf9%3Ae5e7%3Aa980%3Aba6d&initcwndbps=958750&mt=1785675202&oweuc="
+          }
+        }
+      }
+    },
+    "metadata": {
+      "url": "/watch?v=JGwWNGJdvx8&list=PLMC9KNkIncKvYin_USF1qoJQnIyMAfRxl&pp=iAQB8AUB0gcJCbECa94AFGB0",
+      "page_type": "WEB_PAGE_TYPE_WATCH",
+      "api_url": "/player"
+    },
+    "command": {
+      "type": "WatchEndpoint"
+    }
+  },
+  "messages": [
+    {
+      "type": "Message",
+      "text": {
+        "text": "Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2026)\n\nIf you liked this playlist, we recommend you also listen to these music lists:\n\n1. Pop Music Playlist - Timeless Pop Songs (Updated Weekly 2026) - https://play.redlist.com/2161\n2. Best Pop Songs of All Time - Most Famous Pop Music (Greatest Pop Hits Ever) - https://play.redlist.com/13732\n\nFind our playlist with these keywords: pop music hits, best pop songs of all time, pop hits playlist, best pop songs, popular pop songs, famous pop music, pop playlist, best pop song ever, top pop songs of all time, timeless pop hits playlist, top pop music, classic pop songs, most popular pop songs, good pop music, all time pop hits, greatest pop songs of all time, pop music playlist, most listened pop songs, popular pop music.\n\nDive into a seamless blend of best music hits and the latest pop songs of 2026 featuring the musical prowess of artists that have defined generations. From the melodic genius of Ed Sheeran and the dynamic duos of Mark Ronson & Bruno Mars. Explore chart-toppers by Maroon 5, OneRepublic, David Kushner, and Katy Perry. Feel the rhythm with Justin Bieber and Miley Cyrus. Lose yourself in the beats of Alan Walker, Passenger, Anne-Marie, Becky G, Major Lazer & DJ Snake, and Dua Lipa. This compilation is a blend of nostalgia and the best pop music of 2026 that'll have you hitting repeat! 🎵🌟🎤\n\nIn the next year, the playlist is going to be titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2027)\n Last year, the playlist was titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2025)\n\nShare your thoughts on our playlist: contact@red-music.com",
+        "runs": [
+          {
+            "text": "Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2026)\n\nIf you liked this playlist, we recommend you also listen to these music lists:\n\n1. Pop Music Playlist - Timeless Pop Songs (Updated Weekly 2026) - https://play.redlist.com/2161\n2. Best Pop Songs of All Time - Most Famous Pop Music (Greatest Pop Hits Ever) - https://play.redlist.com/13732\n\nFind our playlist with these keywords: pop music hits, best pop songs of all time, pop hits playlist, best pop songs, popular pop songs, famous pop music, pop playlist, best pop song ever, top pop songs of all time, timeless pop hits playlist, top pop music, classic pop songs, most popular pop songs, good pop music, all time pop hits, greatest pop songs of all time, pop music playlist, most listened pop songs, popular pop music.\n\nDive into a seamless blend of best music hits and the latest pop songs of 2026 featuring the musical prowess of artists that have defined generations. From the melodic genius of Ed Sheeran and the dynamic duos of Mark Ronson & Bruno Mars. Explore chart-toppers by Maroon 5, OneRepublic, David Kushner, and Katy Perry. Feel the rhythm with Justin Bieber and Miley Cyrus. Lose yourself in the beats of Alan Walker, Passenger, Anne-Marie, Becky G, Major Lazer & DJ Snake, and Dua Lipa. This compilation is a blend of nostalgia and the best pop music of 2026 that'll have you hitting repeat! 🎵🌟🎤\n\nIn the next year, the playlist is going to be titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2027)\n Last year, the playlist was titled: Best Pop Songs of All Time: Playlist of Good Songs (Throwback Hits & Pop Music 2025)\n\nShare your thoughts on our playlist: contact@red-music.com",
+            "bold": false,
+            "bracket": false,
+            "deemphasize": false,
+            "italics": false,
+            "strikethrough": false,
+            "error_underline": false,
+            "underline": false
+          }
+        ],
+        "rtl": false
+      }
+    }
+  ]
+}
