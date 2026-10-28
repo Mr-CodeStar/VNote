@@ -105,3 +105,32 @@ export async function generateAiNotes(pageId, videoUrl, apiKey) {
   }
   return res.json();
 }
+
+export async function fetchSetting(key) {
+  const res = await fetch(`${API_BASE}/settings/${key}`);
+  if (!res.ok) throw new Error('Failed to fetch setting');
+  return res.json();
+}
+
+export async function saveSetting(key, value) {
+  const res = await fetch(`${API_BASE}/settings/${key}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ value })
+  });
+  if (!res.ok) throw new Error('Failed to save setting');
+  return res.json();
+}
+
+export async function chatWithVideoGemini(params) {
+  const res = await fetch(`${API_BASE}/video-chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to communicate with Gemini AI');
+  }
+  return res.json();
+}

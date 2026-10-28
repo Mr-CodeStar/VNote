@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Settings, Video, VideoOff, Edit3, Link, Sparkles, Folder, FileText, Sun, Moon, Maximize2 } from 'lucide-react';
 import { hasValidYouTubeVideo } from '../utils/youtube';
+import * as api from '../services/api';
 
 export default function WorkspaceHeader({
   activeBook,
@@ -16,12 +17,18 @@ export default function WorkspaceHeader({
   const [showVideoMenu, setShowVideoMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const handleSetApiKey = () => {
+  const handleSetApiKey = async () => {
     const currentKey = localStorage.getItem('gemini_api_key') || '';
     const newKey = window.prompt('Enter your Gemini API Key:', currentKey);
     if (newKey !== null) {
-      localStorage.setItem('gemini_api_key', newKey.trim());
-      alert('API Key saved successfully!');
+      const trimmed = newKey.trim();
+      localStorage.setItem('gemini_api_key', trimmed);
+      try {
+        await api.saveSetting('gemini_api_key', trimmed);
+      } catch (e) {
+        console.warn('Could not save setting to database:', e);
+      }
+      alert('API Key saved to database successfully!');
     }
     setShowProfileMenu(false);
   };

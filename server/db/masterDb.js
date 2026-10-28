@@ -29,6 +29,13 @@ function getMasterDb() {
         updated_at INTEGER NOT NULL
       )
     `);
+    masterDbInstance.run(`
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    `);
   });
 
   return masterDbInstance;
@@ -80,6 +87,42 @@ export function deleteBookFromMaster(id) {
     db.run(`DELETE FROM books WHERE id = ?`, [id], function (err) {
       if (err) reject(err);
       else resolve({ success: true, id });
+    });
+  });
+}
+
+export function getSetting(key) {
+  return new Promise((resolve, reject) => {
+    const db = getMasterDb();
+    db.get(`SELECT value FROM settings WHERE key = ?`, [key], (err, row) => {
+      if (err) reject(err);
+      else resolve(row ? row.value : null);
+    });
+  });
+}
+
+export function setSetting(key, value) {
+  return new Promise((resolve, reject) => {
+    const db = getMasterDb();
+    const now = Date.now();
+    db.run(
+      `INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?)
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`,
+      [key, value, now],
+      function (err) {
+        if (err) reject(err);
+        else resolve({ key, value, updated_at: now });
+      }
+    );
+  });
+}
+
+export function deleteSetting(key) {
+  return new Promise((resolve, reject) => {
+    const db = getMasterDb();
+    db.run(`DELETE FROM settings WHERE key = ?`, [key], function (err) {
+      if (err) reject(err);
+      else resolve({ success: true, key });
     });
   });
 }

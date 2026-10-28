@@ -30,10 +30,14 @@ export function saveNoteFile(pageId, noteData) {
   const hasText = Array.isArray(noteData?.textNodes) && noteData.textNodes.length > 0;
   const hasDrawings = Array.isArray(noteData?.strokes) && noteData.strokes.length > 0;
 
+  const hasVoice = Boolean(noteData?.voiceTranscript);
+  const hasSnapshots = Array.isArray(noteData?.snapshots) && noteData.snapshots.length > 0;
+  const hasOutline = Boolean(noteData?.outlineData);
+
   const filename = `note_${pageId}.json`;
   const filePath = path.join(NOTES_DIR, filename);
 
-  if (!hasText && !hasDrawings) {
+  if (!hasText && !hasDrawings && !hasVoice && !hasSnapshots && !hasOutline) {
     // If notes are now empty, remove the file if it exists
     if (fs.existsSync(filePath)) {
       try {
@@ -50,7 +54,11 @@ export function saveNoteFile(pageId, noteData) {
     pageId,
     updatedAt: Date.now(),
     textNodes: noteData.textNodes || [],
-    strokes: noteData.strokes || []
+    strokes: noteData.strokes || [],
+    voiceTranscript: noteData.voiceTranscript || null,
+    voiceDuration: noteData.voiceDuration || null,
+    snapshots: noteData.snapshots || [],
+    outlineData: noteData.outlineData || null
   };
 
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');
