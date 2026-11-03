@@ -1,8 +1,15 @@
+import 'dotenv/config';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import { YoutubeTranscript } from 'youtube-transcript';
 import { GoogleGenAI } from '@google/genai';
 import { v4 as uuidv4 } from 'uuid';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import {
   getAllBooks,
   createBookInMaster,
@@ -192,7 +199,7 @@ app.get('/api/pages/:pageId/notes', async (req, res) => {
 app.post('/api/books/:bookId/pages/:pageId/notes', async (req, res) => {
   try {
     const { bookId, pageId } = req.params;
-    const { textNodes, strokes, voiceTranscript, voiceDuration, snapshots, outlineData } = req.body;
+    const { textNodes, strokes, voiceTranscript, voiceDuration, snapshots, outlineData, chatMessages } = req.body;
 
     // Save note to file
     const noteFilename = saveNoteFile(pageId, {
@@ -201,7 +208,8 @@ app.post('/api/books/:bookId/pages/:pageId/notes', async (req, res) => {
       voiceTranscript,
       voiceDuration,
       snapshots,
-      outlineData
+      outlineData,
+      chatMessages
     });
 
     // Update SQLite database note_filename column (becomes filename if saved, or NULL if empty)
@@ -214,28 +222,40 @@ app.post('/api/books/:bookId/pages/:pageId/notes', async (req, res) => {
 });
 
 const GEMINI_MODELS = [
+  'gemini-3.5-flash',
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
   'gemini-3.8-flash',
+  'gemini-3.5-flash-lite',
   'gemini-flash-latest',
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash'
+  'gemini-flash-lite-latest'
 ];
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function extractCleanErrorMessage(err) {
-  if (!err) return 'Unknown error';
+  if (!err) return 'Unknown error occurred while contacting Gemini AI.';
   const msg = err.message || String(err);
   try {
     const parsed = JSON.parse(msg);
     if (parsed.error && parsed.error.message) {
+      if (parsed.error.code === 503 || parsed.error.message.includes('high demand')) {
+        return "Google's Gemini model servers are currently under temporary high demand worldwide. Please wait a few seconds and try again.";
+      }
       return parsed.error.message;
     }
   } catch (e) {}
+  if (msg.includes('high demand') || msg.includes('503')) {
+    return "Google's Gemini model servers are currently under temporary high demand worldwide. Please wait a few seconds and try again.";
+  }
   return msg;
 }
 
 async function callGeminiWithFallback(ai, contents, config = {}) {
-  let lastErr = null;
-  for (const modelName of GEMINI_MODELS) {
+  let primaryError = null;
+
+  for (let i = 0; i < GEMINI_MODELS.length; i++) {
+    const modelName = GEMINI_MODELS[i];
     try {
       const response = await ai.models.generateContent({
         model: modelName,
@@ -246,12 +266,50 @@ async function callGeminiWithFallback(ai, contents, config = {}) {
         return { text: response.text, model: modelName };
       }
     } catch (err) {
-      lastErr = err;
       console.warn(`Attempt with ${modelName} failed:`, err.message);
+      if (!primaryError || err.status === 401 || err.status === 403 || err.status === 503) {
+        primaryError = err;
+      }
+      const isHighDemand = err.status === 503 || (err.message && err.message.includes('high demand'));
+      if (isHighDemand && i < GEMINI_MODELS.length - 1) {
+        await sleep(650);
+      }
     }
   }
-  throw lastErr || new Error('Failed to get response from Gemini.');
+
+  // If failed due to high demand spike, pause 1s and retry the primary model once
+  if (primaryError && (primaryError.status === 503 || primaryError.message?.includes('high demand'))) {
+    try {
+      await sleep(1000);
+      const retryResponse = await ai.models.generateContent({
+        model: GEMINI_MODELS[0],
+        contents,
+        config
+      });
+      if (retryResponse && retryResponse.text) {
+        return { text: retryResponse.text, model: GEMINI_MODELS[0] };
+      }
+    } catch (retryErr) {
+      console.warn('Retry with primary model failed:', retryErr.message);
+    }
+  }
+
+  throw primaryError || new Error('All Gemini model endpoints failed. Please verify your API key.');
 }
+
+app.post('/api/test-gemini-key', async (req, res) => {
+  try {
+    const { apiKey } = req.body;
+    if (!apiKey || !apiKey.trim()) {
+      return res.status(400).json({ error: 'API key is required' });
+    }
+    const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
+    const result = await callGeminiWithFallback(ai, 'Say "connected" in one word.');
+    res.json({ success: true, message: 'Gemini API key is valid and connected!', modelUsed: result.model });
+  } catch (err) {
+    res.status(400).json({ error: extractCleanErrorMessage(err) || 'Failed to validate API key with Gemini' });
+  }
+});
 
 app.post('/api/pages/:pageId/generate-notes', async (req, res) => {
   try {
@@ -449,8 +507,56 @@ Guidelines:
   }
 });
 
-// Start Server
-app.listen(PORT, async () => {
-  console.log(`Vnote Backend running on http://localhost:${PORT}`);
-});
+// Serve static client build if available (production / desktop app mode)
+const DIST_DIR = process.env.VNOTE_DIST_DIR || path.resolve(__dirname, '../dist');
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api')) {
+      return next();
+    }
+    const indexHtml = path.join(DIST_DIR, 'index.html');
+    if (fs.existsSync(indexHtml)) {
+      return res.sendFile(indexHtml);
+    }
+    next();
+  });
+}
+
+let serverInstance = null;
+
+export function startServer(port = PORT) {
+  return new Promise((resolve, reject) => {
+    try {
+      serverInstance = app.listen(port, () => {
+        const actualPort = serverInstance.address().port;
+        console.log(`Vnote Backend running on http://localhost:${actualPort}`);
+        resolve({ server: serverInstance, port: actualPort });
+      });
+      serverInstance.on('error', (err) => {
+        console.error('Vnote server error:', err);
+        reject(err);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+export function stopServer() {
+  return new Promise((resolve) => {
+    if (serverInstance) {
+      serverInstance.close(() => resolve());
+    } else {
+      resolve();
+    }
+  });
+}
+
+export default app;
+
+// Auto-start server unless started programmatically (e.g., inside Electron main)
+if (process.env.VNOTE_EMBEDDED !== 'true') {
+  startServer(PORT);
+}
 

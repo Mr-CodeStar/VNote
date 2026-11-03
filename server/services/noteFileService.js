@@ -3,13 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const NOTES_DIR = path.join(__dirname, '../data/notes');
-
-if (!fs.existsSync(NOTES_DIR)) {
-  fs.mkdirSync(NOTES_DIR, { recursive: true });
-}
+import { NOTES_DIR } from '../config/paths.js';
 
 export function readNoteFile(filename) {
   if (!filename) return null;
@@ -33,11 +27,12 @@ export function saveNoteFile(pageId, noteData) {
   const hasVoice = Boolean(noteData?.voiceTranscript);
   const hasSnapshots = Array.isArray(noteData?.snapshots) && noteData.snapshots.length > 0;
   const hasOutline = Boolean(noteData?.outlineData);
+  const hasChat = Array.isArray(noteData?.chatMessages) && noteData.chatMessages.length > 0;
 
   const filename = `note_${pageId}.json`;
   const filePath = path.join(NOTES_DIR, filename);
 
-  if (!hasText && !hasDrawings && !hasVoice && !hasSnapshots && !hasOutline) {
+  if (!hasText && !hasDrawings && !hasVoice && !hasSnapshots && !hasOutline && !hasChat) {
     // If notes are now empty, remove the file if it exists
     if (fs.existsSync(filePath)) {
       try {
@@ -58,7 +53,8 @@ export function saveNoteFile(pageId, noteData) {
     voiceTranscript: noteData.voiceTranscript || null,
     voiceDuration: noteData.voiceDuration || null,
     snapshots: noteData.snapshots || [],
-    outlineData: noteData.outlineData || null
+    outlineData: noteData.outlineData || null,
+    chatMessages: noteData.chatMessages || []
   };
 
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');

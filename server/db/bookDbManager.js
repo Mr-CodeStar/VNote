@@ -5,12 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const DATABASES_DIR = path.join(__dirname, '../data/databases');
-
-if (!fs.existsSync(DATABASES_DIR)) {
-  fs.mkdirSync(DATABASES_DIR, { recursive: true });
-}
+import { DATABASES_DIR } from '../config/paths.js';
 
 const dbConnections = new Map();
 

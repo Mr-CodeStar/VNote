@@ -17,16 +17,17 @@ import {
   Key,
   BookOpen,
   HelpCircle,
-  FileText
+  FileText,
+  BookmarkPlus
 } from 'lucide-react';
 import * as api from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
 
 const QUICK_PROMPTS = [
-  '📌 Summarize Key Points',
-  '💡 Explain Main Concepts',
-  '❓ Quiz Me on this Video',
-  '📝 Action Items & Notes'
+  { label: '📌 Summarize Key Points', prompt: 'Please summarize the main concepts and core takeaways from this video lecture in bullet points.' },
+  { label: '💡 Explain Main Concepts', prompt: 'Explain the most important technical concepts introduced in this video simply with examples.' },
+  { label: '❓ Quiz Me on This Video', prompt: 'Create 3 quick multiple-choice questions to test my understanding of the material in this video.' },
+  { label: '💻 Show Code Examples', prompt: 'List and explain the key code snippets or implementation patterns demonstrated in this video.' }
 ];
 
 function formatErrorMessage(rawMessage) {
@@ -46,17 +47,34 @@ export default function VideoAiChatWindow({
   activePage,
   apiKey,
   hasGeminiApiKey,
+  initialMessages = [],
+  onMessagesChange,
   onAddNoteToCanvas,
   onOpenVideoModal,
   onPromptSetApiKey
 }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    if (Array.isArray(initialMessages) && initialMessages.length > 0) return initialMessages;
+    if (activePage?.id) {
+      try {
+        const stored = localStorage.getItem(`vnote_chat_${activePage.id}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return [];
+  });
+
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isLoadingTranscript, setIsLoadingTranscript] = useState(false);
   const [hasTranscript, setHasTranscript] = useState(false);
   const [transcriptText, setTranscriptText] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [savedMsgId, setSavedMsgId] = useState(null);
+  const [savedAllSuccess, setSavedAllSuccess] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
   const messagesEndRef = useRef(null);
@@ -78,6 +96,41 @@ export default function VideoAiChatWindow({
     }
   }, [isOpen, isMinimized]);
 
+  // Sync messages whenever active page or loaded initialMessages change
+  useEffect(() => {
+    if (Array.isArray(initialMessages) && initialMessages.length > 0) {
+      setMessages(initialMessages);
+    } else if (activePage?.id) {
+      try {
+        const stored = localStorage.getItem(`vnote_chat_${activePage.id}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setMessages(parsed);
+            return;
+          }
+        }
+      } catch (e) {}
+      setMessages([]);
+    }
+  }, [activePage?.id, initialMessages]);
+
+  // Helper to update messages, notify parent, and persist to localStorage
+  const updateMessages = (updater) => {
+    setMessages((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (onMessagesChange) {
+        onMessagesChange(next);
+      }
+      if (activePage?.id) {
+        try {
+          localStorage.setItem(`vnote_chat_${activePage.id}`, JSON.stringify(next));
+        } catch (e) {}
+      }
+      return next;
+    });
+  };
+
   // Handle page/video change & initial transcript fetch
   useEffect(() => {
     const videoUrl = activePage?.video_url || '';
@@ -86,10 +139,12 @@ export default function VideoAiChatWindow({
       setTranscriptText('');
       setHasTranscript(false);
 
-      if (videoUrl && isOpen && hasGeminiApiKey) {
+      // Only auto-initialize if there is NO existing chat history for this page
+      const hasExistingHistory = messages.length > 0;
+      if (videoUrl && isOpen && hasGeminiApiKey && !hasExistingHistory) {
         initVideoChat(videoUrl);
-      } else if (!videoUrl) {
-        setMessages([
+      } else if (!videoUrl && !hasExistingHistory) {
+        updateMessages([
           {
             id: uuidv4(),
             sender: 'ai',
@@ -101,7 +156,7 @@ export default function VideoAiChatWindow({
     }
   }, [activePage?.id, activePage?.video_url, isOpen, hasGeminiApiKey]);
 
-  // If user opened chat for the first time on a page with video
+  // If user opened chat for the first time on a page with video and no history
   useEffect(() => {
     if (isOpen && activePage?.video_url && messages.length === 0 && !isLoadingTranscript && hasGeminiApiKey) {
       initVideoChat(activePage.video_url);
@@ -123,7 +178,7 @@ export default function VideoAiChatWindow({
       }
       setHasTranscript(Boolean(data.hasTranscript));
 
-      setMessages([
+      updateMessages([
         {
           id: uuidv4(),
           sender: 'ai',
@@ -133,7 +188,7 @@ export default function VideoAiChatWindow({
       ]);
     } catch (err) {
       console.error('Failed to initialize video chat:', err);
-      setMessages([
+      updateMessages([
         {
           id: uuidv4(),
           sender: 'ai',
@@ -163,13 +218,14 @@ export default function VideoAiChatWindow({
       timestamp: Date.now()
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const nextMessages = [...messages, userMsg];
+    updateMessages(nextMessages);
     setInputText('');
     setIsSending(true);
 
     try {
       // Build history for backend
-      const history = messages.slice(-8).map((m) => ({
+      const history = nextMessages.slice(-8).map((m) => ({
         role: m.sender === 'ai' ? 'model' : 'user',
         text: m.text
       }));
@@ -195,15 +251,15 @@ export default function VideoAiChatWindow({
         timestamp: Date.now()
       };
 
-      setMessages((prev) => [...prev, aiMsg]);
+      updateMessages([...nextMessages, aiMsg]);
     } catch (err) {
       console.error('Error sending message to Gemini:', err);
-      setMessages((prev) => [
-        ...prev,
+      updateMessages([
+        ...nextMessages,
         {
           id: uuidv4(),
           sender: 'ai',
-          text: `⚠️ **Error:** ${formatErrorMessage(err.message)}`,
+          text: `⚠️ **Error communicating with Gemini:** ${formatErrorMessage(err.message)}`,
           isError: true,
           timestamp: Date.now()
         }
@@ -227,13 +283,44 @@ export default function VideoAiChatWindow({
   };
 
   const handleClearHistory = () => {
-    if (window.confirm('Clear chat conversation for this video?')) {
+    if (window.confirm('Reset conversation for this page?')) {
       if (activePage?.video_url && hasGeminiApiKey) {
         initVideoChat(activePage.video_url);
       } else {
-        setMessages([]);
+        updateMessages([]);
       }
     }
+  };
+
+  // Option 1: Save a single AI response into a Canvas Text Box
+  const handleSaveMessageToTextBox = (msgId, text) => {
+    if (!text || !onAddNoteToCanvas) return;
+    const pageTitle = activePage?.title || 'Lesson';
+    const noteContent = `### 💡 AI Tutor Note: ${pageTitle}\n\n${text}`;
+    onAddNoteToCanvas(noteContent);
+    setSavedMsgId(msgId);
+    setTimeout(() => setSavedMsgId(null), 2500);
+  };
+
+  // Option 2: Save the entire conversation into a Canvas Text Box
+  const handleSaveAllChatToTextBox = () => {
+    if (!messages || messages.length === 0 || !onAddNoteToCanvas) return;
+    const pageTitle = activePage?.title || 'Lesson';
+    let formatted = `### 💬 AI Study Chat: ${pageTitle}\n`;
+    formatted += `*Saved: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}*\n\n`;
+
+    messages.forEach((m) => {
+      if (m.isError) return;
+      if (m.sender === 'user') {
+        formatted += `**🙋 Student:** ${m.text}\n\n`;
+      } else {
+        formatted += `**🤖 AI Copilot:**\n${m.text}\n\n---\n\n`;
+      }
+    });
+
+    onAddNoteToCanvas(formatted);
+    setSavedAllSuccess(true);
+    setTimeout(() => setSavedAllSuccess(false), 2500);
   };
 
   // If chat is not open, do not render full window
@@ -273,7 +360,7 @@ export default function VideoAiChatWindow({
           <div className="chat-title-block">
             <div className="chat-main-title">
               <span>Gemini Video Copilot</span>
-              <span className="chat-gemini-badge">3.8 FLASH</span>
+              <span className="chat-gemini-badge">3.5 FLASH</span>
             </div>
             <div className="chat-subtitle">
               {isLoadingTranscript ? (
@@ -292,15 +379,37 @@ export default function VideoAiChatWindow({
         </div>
 
         <div className="chat-header-actions">
+          {/* Header Action: Save Chat to Text Box */}
+          {messages.length > 0 && (
+            <button
+              className={`chat-header-save-btn ${savedAllSuccess ? 'saved' : ''}`}
+              onClick={handleSaveAllChatToTextBox}
+              title="Save this conversation as a Text Box on this page"
+            >
+              {savedAllSuccess ? (
+                <>
+                  <Check size={12} className="icon-green" />
+                  <span>Saved to Box!</span>
+                </>
+              ) : (
+                <>
+                  <FileText size={12} />
+                  <span>Save to Text Box</span>
+                </>
+              )}
+            </button>
+          )}
+
           {messages.length > 0 && (
             <button
               className="chat-action-btn"
               onClick={handleClearHistory}
-              title="Reset / Restart Conversation"
+              title="Reset / Clear Conversation"
             >
               <RotateCcw size={13} />
             </button>
           )}
+
           <button
             className="chat-action-btn"
             onClick={onToggleMinimize}
@@ -349,24 +458,28 @@ export default function VideoAiChatWindow({
           </div>
         )}
 
-        {/* Messages List */}
+        {/* Message Bubble Feed */}
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`chat-message-row ${msg.sender === 'user' ? 'user-row' : 'ai-row'}`}
+            className={`chat-message-row ${msg.sender === 'user' ? 'user-row' : 'ai-row'} ${
+              msg.isError ? 'error-row' : ''
+            }`}
           >
-            <div className="message-avatar">
-              {msg.sender === 'user' ? (
-                <div className="user-icon-bubble">You</div>
-              ) : (
-                <div className="ai-icon-bubble">
-                  <Sparkles size={13} />
+            {msg.sender === 'ai' && (
+              <div className="message-avatar">
+                <div className={`ai-icon-bubble ${msg.isError ? 'error-icon' : ''}`}>
+                  {msg.isError ? <AlertCircle size={13} /> : <Sparkles size={13} />}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="message-content-wrapper">
-              <div className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'ai-bubble'} ${msg.isError ? 'error-bubble' : ''}`}>
+              <div
+                className={`message-bubble ${
+                  msg.sender === 'user' ? 'user-bubble' : 'ai-bubble'
+                } ${msg.isError ? 'error-bubble' : ''}`}
+              >
                 <div className="markdown-chat-render">
                   <ReactMarkdown>{msg.text}</ReactMarkdown>
                 </div>
@@ -376,13 +489,23 @@ export default function VideoAiChatWindow({
               {msg.sender === 'ai' && !msg.isError && (
                 <div className="message-bottom-actions">
                   <button
-                    className="msg-action-chip"
-                    onClick={() => onAddNoteToCanvas && onAddNoteToCanvas(msg.text)}
-                    title="Add this AI answer as a note on your canvas"
+                    className={`msg-action-chip ${savedMsgId === msg.id ? 'chip-saved' : ''}`}
+                    onClick={() => handleSaveMessageToTextBox(msg.id, msg.text)}
+                    title="Save this response into a Text Box on this page"
                   >
-                    <Plus size={12} />
-                    <span>Add to Canvas</span>
+                    {savedMsgId === msg.id ? (
+                      <>
+                        <Check size={11} className="icon-green" />
+                        <span>Saved to Box!</span>
+                      </>
+                    ) : (
+                      <>
+                        <FileText size={11} />
+                        <span>Save to Text Box</span>
+                      </>
+                    )}
                   </button>
+
                   <button
                     className="msg-action-chip"
                     onClick={() => handleCopy(msg.id, msg.text)}
@@ -390,12 +513,12 @@ export default function VideoAiChatWindow({
                   >
                     {copiedId === msg.id ? (
                       <>
-                        <Check size={12} className="icon-green" />
+                        <Check size={11} className="icon-green" />
                         <span>Copied!</span>
                       </>
                     ) : (
                       <>
-                        <Copy size={12} />
+                        <Copy size={11} />
                         <span>Copy</span>
                       </>
                     )}
@@ -405,6 +528,28 @@ export default function VideoAiChatWindow({
             </div>
           </div>
         ))}
+
+        {/* Quick Save All Banner at bottom of messages */}
+        {messages.length >= 2 && (
+          <div className="save-all-chat-banner-container">
+            <button
+              className={`save-all-chat-banner-btn ${savedAllSuccess ? 'saved' : ''}`}
+              onClick={handleSaveAllChatToTextBox}
+            >
+              {savedAllSuccess ? (
+                <>
+                  <Check size={13} className="icon-green" />
+                  <span>Conversation saved into Canvas Text Box!</span>
+                </>
+              ) : (
+                <>
+                  <BookmarkPlus size={13} />
+                  <span>Save entire conversation into a Text Box note</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Thinking Indicator */}
         {isSending && (
@@ -421,7 +566,7 @@ export default function VideoAiChatWindow({
                   <span />
                   <span />
                 </div>
-                <span className="thinking-label">Gemini is studying transcript & typing...</span>
+                <span className="thinking-label">Gemini is studying your lecture...</span>
               </div>
             </div>
           </div>
@@ -430,46 +575,36 @@ export default function VideoAiChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 3. QUICK PROMPT CHIPS */}
-      {hasGeminiApiKey && !isLoadingTranscript && messages.length > 0 && (
-        <div className="chat-quick-prompts-bar">
-          {QUICK_PROMPTS.map((prompt) => (
-            <button
-              key={prompt}
-              type="button"
-              className="quick-prompt-chip"
-              onClick={() => handleSendMessage(prompt.replace(/^[^a-zA-Z0-9]+/, ''))}
-              disabled={isSending}
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* 3. QUICK SUGGESTION PROMPTS BAR */}
+      <div className="chat-quick-prompts-bar">
+        {QUICK_PROMPTS.map((qp, idx) => (
+          <button
+            key={idx}
+            className="quick-prompt-pill"
+            onClick={() => handleSendMessage(qp.prompt)}
+            disabled={isSending}
+          >
+            {qp.label}
+          </button>
+        ))}
+      </div>
 
       {/* 4. CHAT INPUT BAR */}
       <div className="video-chat-input-bar">
         <textarea
           ref={inputRef}
-          className="chat-input-field"
+          className="chat-textarea"
           rows={1}
-          placeholder={
-            !hasGeminiApiKey
-              ? "Gemini API Key required to chat..."
-              : activePage?.video_url
-              ? "Ask anything about this video's concepts, code, or explanation..."
-              : "Ask Gemini any questions about this page..."
-          }
+          placeholder="Ask anything about this video's concepts, code, or explanation..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={!hasGeminiApiKey || isSending || isLoadingTranscript}
+          disabled={isSending}
         />
-
         <button
-          className={`chat-send-btn ${inputText.trim() && !isSending ? 'active' : ''}`}
+          className={`chat-send-btn ${inputText.trim() ? 'active' : ''}`}
           onClick={() => handleSendMessage()}
-          disabled={!inputText.trim() || isSending || !hasGeminiApiKey || isLoadingTranscript}
+          disabled={!inputText.trim() || isSending}
           title="Send Question (Enter)"
         >
           {isSending ? <Loader2 size={15} className="spinner" /> : <Send size={15} />}

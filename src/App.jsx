@@ -3,6 +3,7 @@ import StudioHeader from './components/StudioHeader';
 import UnifiedSidebar from './components/UnifiedSidebar';
 import StudioCanvas from './components/StudioCanvas';
 import VideoModal from './components/VideoModal';
+import ApiKeyModal from './components/ApiKeyModal';
 import * as api from './services/api';
 import { Loader2, AlertCircle } from 'lucide-react';
 import './App.css';
@@ -42,6 +43,8 @@ export default function App() {
 
   // Video Modal state
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  // Gemini API Key Modal state
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   // Ref to canvas component for direct actions
   const canvasRef = useRef(null);
@@ -108,15 +111,7 @@ export default function App() {
   };
 
   const handlePromptSetApiKey = () => {
-    const currentKey = geminiApiKey || localStorage.getItem('gemini_api_key') || '';
-    const newKey = window.prompt(
-      'Enter your Google Gemini API Key:\n(This will be saved to the database to enable Video AI Chat and notes generation)',
-      currentKey
-    );
-    if (newKey !== null) {
-      handleSaveApiKey(newKey.trim());
-      alert(newKey.trim() ? 'Gemini API Key saved to database successfully!' : 'Gemini API Key removed.');
-    }
+    setIsApiKeyModalOpen(true);
   };
 
   const handleZoomIn = () => setZoom((prev) => Math.min(200, prev + 10));
@@ -253,16 +248,25 @@ export default function App() {
 
   // 3. Load Notes when activePageId changes
   const loadNotes = useCallback(async (pageId) => {
+    const emptyFallback = {
+      textNodes: [],
+      strokes: [],
+      snapshots: [],
+      outlineData: null,
+      voiceTranscript: null,
+      voiceDuration: 0,
+      chatMessages: []
+    };
     if (!pageId) {
-      setActiveNoteData({ textNodes: [], strokes: [], snapshots: [], outlineData: null, voiceTranscript: null, voiceDuration: 0 });
+      setActiveNoteData(emptyFallback);
       return;
     }
     try {
       const noteData = await api.fetchPageNotes(pageId);
-      setActiveNoteData(noteData || { textNodes: [], strokes: [], snapshots: [], outlineData: null, voiceTranscript: null, voiceDuration: 0 });
+      setActiveNoteData(noteData || emptyFallback);
     } catch (err) {
       console.error('Error fetching page notes:', err);
-      setActiveNoteData({ textNodes: [], strokes: [], snapshots: [], outlineData: null, voiceTranscript: null, voiceDuration: 0 });
+      setActiveNoteData(emptyFallback);
     }
   }, []);
 
@@ -462,6 +466,7 @@ export default function App() {
         hasGeminiApiKey={hasGeminiApiKey}
         geminiApiKey={geminiApiKey}
         onSaveApiKey={handleSaveApiKey}
+        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
       />
 
       {/* 2. MAIN WORKSPACE ROW: SIDEBAR + STUDIO CANVAS */}
@@ -530,6 +535,14 @@ export default function App() {
         initialUrl={activePage?.video_url || ''}
         onClose={() => setIsVideoModalOpen(false)}
         onSave={handleSaveVideoUrl}
+      />
+
+      {/* 4. MODAL FOR GEMINI API KEY */}
+      <ApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        currentKey={geminiApiKey}
+        onClose={() => setIsApiKeyModalOpen(false)}
+        onSaveKey={handleSaveApiKey}
       />
     </div>
   );

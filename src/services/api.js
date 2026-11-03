@@ -134,3 +134,17 @@ export async function chatWithVideoGemini(params) {
   }
   return res.json();
 }
+
+export async function testGeminiApiKey(apiKey) {
+  const res = await fetch(`${API_BASE}/test-gemini-key`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiKey })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to validate API key with Gemini');
+  }
+  return data;
+}
+

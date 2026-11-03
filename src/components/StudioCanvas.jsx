@@ -66,6 +66,7 @@ export default function StudioCanvas({
   });
   const [snapshots, setSnapshots] = useState(initialNoteData?.snapshots || []);
   const [outlineData, setOutlineData] = useState(initialNoteData?.outlineData || null);
+  const [chatMessages, setChatMessages] = useState(initialNoteData?.chatMessages || []);
 
   // Voice recording state
   const [isVoiceRecording, setIsVoiceRecording] = useState(false);
@@ -95,7 +96,8 @@ export default function StudioCanvas({
     voiceTranscript: null,
     voiceDuration: 0,
     snapshots: [],
-    outlineData: null
+    outlineData: null,
+    chatMessages: []
   });
   latestStateRef.current = {
     textNodes,
@@ -103,7 +105,8 @@ export default function StudioCanvas({
     voiceTranscript,
     voiceDuration,
     snapshots,
-    outlineData
+    outlineData,
+    chatMessages
   };
 
   // Sync when active page or loaded note data changes
@@ -123,6 +126,7 @@ export default function StudioCanvas({
 
     setSnapshots(initialNoteData?.snapshots || []);
     setOutlineData(initialNoteData?.outlineData || null);
+    setChatMessages(initialNoteData?.chatMessages || []);
 
     historyRef.current = [];
     redoRef.current = [];
@@ -131,7 +135,7 @@ export default function StudioCanvas({
   // Debounced auto-save
   const saveTimeoutRef = useRef(null);
   const triggerSave = useCallback(
-    (nextNotes, nextStrokes, nextVoiceTranscript, nextVoiceDuration, nextSnapshots, nextOutlineData) => {
+    (nextNotes, nextStrokes, nextVoiceTranscript, nextVoiceDuration, nextSnapshots, nextOutlineData, nextChatMessages) => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = setTimeout(() => {
         if (onSaveNotes) {
@@ -142,12 +146,22 @@ export default function StudioCanvas({
             voiceTranscript: nextVoiceTranscript !== undefined ? nextVoiceTranscript : current.voiceTranscript,
             voiceDuration: nextVoiceDuration !== undefined ? nextVoiceDuration : current.voiceDuration,
             snapshots: nextSnapshots !== undefined ? nextSnapshots : current.snapshots,
-            outlineData: nextOutlineData !== undefined ? nextOutlineData : current.outlineData
+            outlineData: nextOutlineData !== undefined ? nextOutlineData : current.outlineData,
+            chatMessages: nextChatMessages !== undefined ? nextChatMessages : current.chatMessages
           });
         }
       }, 600);
     },
     [onSaveNotes]
+  );
+
+  const handleChatMessagesChange = useCallback(
+    (updated) => {
+      setChatMessages(updated);
+      latestStateRef.current.chatMessages = updated;
+      triggerSave(undefined, undefined, undefined, undefined, undefined, undefined, updated);
+    },
+    [triggerSave]
   );
 
   // Push to history before state update
@@ -258,13 +272,17 @@ export default function StudioCanvas({
 
     pushHistory(currentNodes, strokes);
 
+    const calcHeight = defaultContent && defaultContent.length > 200
+      ? Math.min(520, Math.max(160, Math.ceil(defaultContent.length / 2.6)))
+      : 140;
+
     const newNode = {
       id: uuidv4(),
       nodeType: 'text',
       x: Math.round(targetX),
       y: Math.round(targetY),
       width: 680,
-      height: 140,
+      height: calcHeight,
       content: defaultContent,
       textColor: 'var(--text-main)'
     };
@@ -448,10 +466,7 @@ export default function StudioCanvas({
   // Toggle Video AI Chat Window
   const handleToggleAiChat = () => {
     if (!hasGeminiApiKey) {
-      const confirmSet = window.confirm(
-        "Gemini API Key is not configured in the database!\n\nTo chat with Gemini about this video's transcript, please set your Gemini API Key in the Profile menu (top-right avatar icon).\n\nWould you like to enter your Gemini API Key now?"
-      );
-      if (confirmSet && onPromptSetApiKey) {
+      if (onPromptSetApiKey) {
         onPromptSetApiKey();
       }
       return;
@@ -877,6 +892,8 @@ export default function StudioCanvas({
         activePage={activePage}
         apiKey={geminiApiKey}
         hasGeminiApiKey={hasGeminiApiKey}
+        initialMessages={chatMessages}
+        onMessagesChange={handleChatMessagesChange}
         onAddNoteToCanvas={(content) => handleAddNoteBox(content)}
         onOpenVideoModal={onOpenVideoModal}
         onPromptSetApiKey={onPromptSetApiKey}

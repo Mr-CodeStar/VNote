@@ -52,7 +52,8 @@ export default function StudioHeader({
   onRemoveVideo,
   hasGeminiApiKey = false,
   onSaveApiKey,
-  geminiApiKey = ''
+  geminiApiKey = '',
+  onOpenApiKeyModal
 }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleText, setTitleText] = useState(activePage?.title || '');
@@ -116,20 +117,10 @@ export default function StudioHeader({
     }
   };
 
-  const handleSetApiKey = async () => {
+  const handleSetApiKey = () => {
     setShowProfileMenu(false);
-    const currentKey = geminiApiKey || localStorage.getItem('gemini_api_key') || '';
-    const newKey = window.prompt(
-      'Enter your Google Gemini API Key:\n(This will be saved to the database to enable Video AI Chat and notes generation)',
-      currentKey
-    );
-    if (newKey !== null) {
-      if (onSaveApiKey) {
-        await onSaveApiKey(newKey.trim());
-      } else {
-        localStorage.setItem('gemini_api_key', newKey.trim());
-      }
-      alert(newKey.trim() ? 'Gemini API Key saved to database successfully!' : 'Gemini API Key removed.');
+    if (onOpenApiKeyModal) {
+      onOpenApiKeyModal();
     }
   };
 
@@ -140,20 +131,7 @@ export default function StudioHeader({
         {/* Brand Monogram & Title */}
         <div className="studio-brand">
           <div className="brand-logo-icon">
-            <svg viewBox="0 0 32 32" fill="none" className="brand-svg">
-              <rect width="32" height="32" rx="8" fill="url(#brandGrad)" />
-              <path
-                d="M8 9.5L16 23.5L24 9.5H20.5L16 17.5L11.5 9.5H8Z"
-                fill="white"
-                fillRule="evenodd"
-              />
-              <defs>
-                <linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#6366f1" />
-                  <stop offset="1" stopColor="#4f46e5" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <img src="./vnote_logo.png" alt="VNote Logo" className="brand-app-logo-img" />
           </div>
           <span className="brand-name">Vnote</span>
           <span className="studio-pill-badge">STUDIO</span>
